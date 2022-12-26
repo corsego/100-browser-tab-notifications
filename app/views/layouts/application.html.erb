@@ -1,7 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Notificador</title>
+    <%= new_notifications_count = Notification.where(seen: [false, nil]).count %>
+    <% if new_notifications_count.positive? %>
+      <%= favicon_link_tag asset_path('linkedin-bell.png') %>
+      <title id="title-notifications" data-controller="title-blink" data-title-blink-new-title-value="(<%= new_notifications_count %>) Alerts">Notificador</title>
+    <% else %>
+      <%= favicon_link_tag asset_path('linkedin.png') %>
+      <title id="title-notifications">Notificador</title>
+    <% end %>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -11,6 +18,7 @@
   </head>
 
   <body>
+    <%= turbo_stream_from :global_notification %>
     <%= yield %>
   </body>
 </html>

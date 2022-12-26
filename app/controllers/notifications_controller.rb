@@ -25,6 +25,10 @@ class NotificationsController < ApplicationController
 
     respond_to do |format|
       if @notification.save
+        Turbo::StreamsChannel.broadcast_replace_to(:global_notification,
+                                                   target: 'title-notifications',
+                                                   partial: "shared/page_title",
+                                                   locals: { new_notifications_count: Notification.where(seen: [false, nil]).count})
         format.html { redirect_to notification_url(@notification), notice: "Notification was successfully created." }
         format.json { render :show, status: :created, location: @notification }
       else
